@@ -1,5 +1,5 @@
 // Step 1: Basic Setup - Create a React app layout
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const App = () => {
   // Step 2: Set up initial state for users, posts, friends, images
@@ -8,6 +8,94 @@ const App = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [comments, setComments] = useState({});
   const [likes, setLikes] = useState({});
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Check if user is authenticated
+  useEffect(() => {
+    checkAuthStatus();
+  }, []);
+
+  const checkAuthStatus = async () => {
+    try {
+      const response = await fetch('/__replauthuser');
+      if (response.ok) {
+        const userData = await response.json();
+        setUser(userData);
+      }
+    } catch (error) {
+      console.log('User not authenticated');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Login function for Replit Auth
+  const loginWithReplit = () => {
+    window.addEventListener("message", authComplete);
+    var h = 500;
+    var w = 350;
+    var left = window.screen.width / 2 - w / 2;
+    var top = window.screen.height / 2 - h / 2;
+
+    var authWindow = window.open(
+      "https://replit.com/auth_with_repl_site?domain=" + window.location.host,
+      "_blank",
+      "modal=yes, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=" +
+        w +
+        ", height=" +
+        h +
+        ", top=" +
+        top +
+        ", left=" +
+        left
+    );
+
+    function authComplete(e) {
+      if (e.data !== "auth_complete") {
+        return;
+      }
+
+      window.removeEventListener("message", authComplete);
+      authWindow.close();
+      window.location.reload();
+    }
+  };
+
+  const logout = () => {
+    window.location.href = '/__replauthlogout';
+  };
+
+  if (loading) {
+    return (
+      <div style={{ padding: '1rem', maxWidth: '600px', margin: 'auto', textAlign: 'center' }}>
+        <h1>Loading...</h1>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div style={{ padding: '1rem', maxWidth: '600px', margin: 'auto', textAlign: 'center' }}>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>Mini Social App</h1>
+        <p style={{ marginBottom: '1rem' }}>Please log in with your Replit account to continue</p>
+        <button 
+          onClick={loginWithReplit}
+          style={{ 
+            backgroundColor: '#007bff', 
+            color: '#fff', 
+            padding: '12px 24px', 
+            borderRadius: '6px', 
+            border: 'none',
+            fontSize: '16px',
+            cursor: 'pointer'
+          }}
+        >
+          Log in with Replit
+        </button>
+      </div>
+    );
+  }
 
   // Step 3: Function to handle adding a new post
   const handleAddPost = () => {
@@ -38,7 +126,33 @@ const App = () => {
 
   return (
     <div style={{ padding: '1rem', maxWidth: '600px', margin: 'auto' }}>
-      <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>Mini Social App</h1>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+        <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: 0 }}>Mini Social App</h1>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          {user.profileImage && (
+            <img 
+              src={user.profileImage} 
+              alt="Profile" 
+              style={{ width: '32px', height: '32px', borderRadius: '50%' }}
+            />
+          )}
+          <span style={{ fontSize: '14px' }}>Welcome, {user.name}!</span>
+          <button 
+            onClick={logout}
+            style={{ 
+              backgroundColor: '#dc3545', 
+              color: '#fff', 
+              padding: '4px 8px', 
+              borderRadius: '4px', 
+              border: 'none',
+              fontSize: '12px',
+              cursor: 'pointer'
+            }}
+          >
+            Logout
+          </button>
+        </div>
+      </div>
       <textarea
         style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #ccc', marginBottom: '10px' }}
         placeholder="What's on your mind?"
