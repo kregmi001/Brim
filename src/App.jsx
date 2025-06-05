@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { initializeApp, getApp } from 'firebase/app';
+import './App.css';
 import { 
   getAuth, 
   signInWithPopup, 
@@ -133,201 +134,147 @@ const App = () => {
 
   if (loading) {
     return (
-      <div style={{ padding: '1rem', maxWidth: '600px', margin: 'auto', textAlign: 'center' }}>
-        <h1>Loading...</h1>
+      <div className="app-container">
+        <div className="loading-container">
+          <h1 className="loading-text">Loading...</h1>
+        </div>
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div style={{ padding: '1rem', maxWidth: '600px', margin: 'auto', textAlign: 'center' }}>
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>Mini Social App</h1>
-        <p style={{ marginBottom: '1rem' }}>Please sign in to continue</p>
+      <div className="app-container">
+        <div className="auth-container">
+          <h1 className="auth-title">Mini Social App</h1>
+          <p className="auth-subtitle">Connect and share with friends</p>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '300px', margin: 'auto' }}>
-          <button 
-            onClick={signInWithGoogle}
-            style={{ 
-              backgroundColor: '#db4437', 
-              color: '#fff', 
-              padding: '12px 24px', 
-              borderRadius: '6px', 
-              border: 'none',
-              fontSize: '16px',
-              cursor: 'pointer'
-            }}
-          >
-            Sign in with Google
-          </button>
+          <div className="auth-buttons">
+            <button onClick={signInWithGoogle} className="auth-button google-btn">
+              🔍 Sign in with Google
+            </button>
 
-          <button 
-            onClick={signInWithTwitter}
-            style={{ 
-              backgroundColor: '#1da1f2', 
-              color: '#fff', 
-              padding: '12px 24px', 
-              borderRadius: '6px', 
-              border: 'none',
-              fontSize: '16px',
-              cursor: 'pointer'
-            }}
-          >
-            Sign in with X (Twitter)
-          </button>
+            <button onClick={signInWithTwitter} className="auth-button twitter-btn">
+              🐦 Sign in with X (Twitter)
+            </button>
 
-          <button 
-            onClick={() => setShowEmailForm(!showEmailForm)}
-            style={{ 
-              backgroundColor: '#28a745', 
-              color: '#fff', 
-              padding: '12px 24px', 
-              borderRadius: '6px', 
-              border: 'none',
-              fontSize: '16px',
-              cursor: 'pointer'
-            }}
-          >
-            Sign in with Email
-          </button>
-        </div>
+            <button onClick={() => setShowEmailForm(!showEmailForm)} className="auth-button email-btn">
+              ✉️ Sign in with Email
+            </button>
+          </div>
 
-        {showEmailForm && (
-          <form onSubmit={handleEmailAuth} style={{ marginTop: '20px', maxWidth: '300px', margin: '20px auto' }}>
-            <div style={{ marginBottom: '10px' }}>
+          {showEmailForm && (
+            <form onSubmit={handleEmailAuth} className="email-form">
               <input
                 type="email"
-                placeholder="Email"
+                placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ccc' }}
+                className="form-input"
               />
-            </div>
-            <div style={{ marginBottom: '10px' }}>
               <input
                 type="password"
-                placeholder="Password"
+                placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ccc' }}
+                className="form-input"
               />
-            </div>
-            <div style={{ marginBottom: '10px' }}>
-              <label style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <div className="checkbox-container">
                 <input
                   type="checkbox"
                   checked={isSignUp}
                   onChange={(e) => setIsSignUp(e.target.checked)}
+                  id="signup-checkbox"
                 />
-                Create new account
-              </label>
-            </div>
-            <button 
-              type="submit"
-              style={{ 
-                backgroundColor: '#007bff', 
-                color: '#fff', 
-                padding: '10px 20px', 
-                borderRadius: '4px', 
-                border: 'none',
-                cursor: 'pointer',
-                width: '100%'
-              }}
-            >
-              {isSignUp ? 'Sign Up' : 'Sign In'}
-            </button>
-          </form>
-        )}
+                <label htmlFor="signup-checkbox">Create new account</label>
+              </div>
+              <button type="submit" className="submit-btn">
+                {isSignUp ? 'Create Account' : 'Sign In'}
+              </button>
+            </form>
+          )}
+        </div>
       </div>
     );
   }
 
   return (
-    <div style={{ padding: '1rem', maxWidth: '600px', margin: 'auto' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-        <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: 0 }}>Mini Social App</h1>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          {user.photoURL && (
-            <img 
-              src={user.photoURL} 
-              alt="Profile" 
-              style={{ width: '32px', height: '32px', borderRadius: '50%' }}
-            />
-          )}
-          <span style={{ fontSize: '14px' }}>Welcome, {user.displayName || user.email}!</span>
-          <button 
-            onClick={handleSignOut}
-            style={{ 
-              backgroundColor: '#dc3545', 
-              color: '#fff', 
-              padding: '4px 8px', 
-              borderRadius: '4px', 
-              border: 'none',
-              fontSize: '12px',
-              cursor: 'pointer'
-            }}
-          >
-            Sign Out
+    <div className="app-container">
+      <div className="main-container">
+        <div className="header">
+          <h1 className="app-title">Mini Social App</h1>
+          <div className="user-info">
+            {user.photoURL && (
+              <img src={user.photoURL} alt="Profile" className="profile-pic" />
+            )}
+            <span className="welcome-text">Welcome, {user.displayName || user.email}!</span>
+            <button onClick={handleSignOut} className="sign-out-btn">
+              Sign Out
+            </button>
+          </div>
+        </div>
+
+        <div className="post-creator">
+          <textarea
+            className="post-textarea"
+            placeholder="What's on your mind? Share something amazing..."
+            value={newPost}
+            onChange={(e) => setNewPost(e.target.value)}
+          />
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => setSelectedImage(e.target.files[0])}
+            className="file-input"
+          />
+          <button onClick={handleAddPost} className="post-btn">
+            📝 Share Post
           </button>
         </div>
-      </div>
 
-      <textarea
-        style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #ccc', marginBottom: '10px' }}
-        placeholder="What's on your mind?"
-        value={newPost}
-        onChange={(e) => setNewPost(e.target.value)}
-      />
-      <input
-        type="file"
-        accept="image/*"
-        onChange={(e) => setSelectedImage(e.target.files[0])}
-        style={{ display: 'block', marginBottom: '10px' }}
-      />
-      <button onClick={handleAddPost} style={{ backgroundColor: '#007bff', color: '#fff', padding: '8px 16px', borderRadius: '4px', border: 'none' }}>
-        Post
-      </button>
-
-      {posts.map((post) => (
-        <div key={post.id} style={{ border: '1px solid #ccc', padding: '10px', marginTop: '20px', borderRadius: '6px' }}>
-          <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>
-            By: {post.author}
-          </div>
-          <div>
-            <p>{post.content}</p>
-            {post.image && (
-              <img
-                src={post.image}
-                alt="User upload"
-                style={{ marginTop: '10px', maxWidth: '100%', maxHeight: '300px' }}
-              />
-            )}
-            <div style={{ marginTop: '10px' }}>
-              <button onClick={() => handleLike(post.id)} style={{ backgroundColor: '#28a745', color: '#fff', padding: '6px 12px', border: 'none', borderRadius: '4px' }}>
-                Like ({likes[post.id] || 0})
-              </button>
+        <div className="posts-container">
+          {posts.map((post) => (
+            <div key={post.id} className="post">
+              <div className="post-author">
+                👤 {post.author}
+              </div>
+              <div className="post-content">
+                {post.content}
+              </div>
+              {post.image && (
+                <img
+                  src={post.image}
+                  alt="User upload"
+                  className="post-image"
+                />
+              )}
+              <div className="post-actions">
+                <button onClick={() => handleLike(post.id)} className="like-btn">
+                  👍 Like ({likes[post.id] || 0})
+                </button>
+              </div>
+              <div className="comments-section">
+                <input
+                  type="text"
+                  placeholder="Add a comment..."
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && e.target.value.trim()) {
+                      handleAddComment(post.id, e.target.value);
+                      e.target.value = '';
+                    }
+                  }}
+                  className="comment-input"
+                />
+                {(comments[post.id] || []).map((comment, i) => (
+                  <div key={i} className="comment">💬 {comment}</div>
+                ))}
+              </div>
             </div>
-            <div style={{ marginTop: '10px' }}>
-              <input
-                type="text"
-                placeholder="Add comment..."
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-                    handleAddComment(post.id, e.target.value);
-                    e.target.value = '';
-                  }
-                }}
-                style={{ width: '100%', padding: '5px', border: '1px solid #ccc', borderRadius: '4px' }}
-              />
-              {(comments[post.id] || []).map((comment, i) => (
-                <p key={i} style={{ fontSize: '0.9em', color: 'gray', marginTop: '5px' }}>- {comment}</p>
-              ))}
-            </div>
-          </div>
+          ))}
         </div>
-      ))}
+      </div>
     </div>
   );
 };
