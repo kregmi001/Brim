@@ -266,6 +266,24 @@ body {
   color: #666;
   margin-bottom: 1rem;
   font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.post-author-pic {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #e1e5e9;
+}
+
+.default-avatar {
+  font-size: 20px;
+}
+
+.author-name {
+  flex: 1;
 }
 
 .post-content {

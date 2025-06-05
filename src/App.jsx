@@ -116,6 +116,7 @@ const App = () => {
       content: newPost,
       image: selectedImage ? URL.createObjectURL(selectedImage) : null,
       author: user.displayName || user.email,
+      authorPhoto: user.photoURL,
     };
     setPosts([...posts, newEntry]);
     setNewPost('');
@@ -249,7 +250,12 @@ const App = () => {
           {posts.map((post) => (
             <div key={post.id} className="post">
               <div className="post-author">
-                👤 {post.author}
+                {post.authorPhoto ? (
+                  <img src={post.authorPhoto} alt="Author" className="post-author-pic" />
+                ) : (
+                  <span className="default-avatar">👤</span>
+                )}
+                <span className="author-name">{post.author}</span>
               </div>
               <div className="post-content">
                 {post.content}
