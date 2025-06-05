@@ -43,6 +43,7 @@ const App = () => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [comments, setComments] = useState({});
   const [likes, setLikes] = useState({});
+  const [reactions, setReactions] = useState({});
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showEmailForm, setShowEmailForm] = useState(false);
@@ -130,6 +131,16 @@ const App = () => {
       ...comments,
       [postId]: [...(comments[postId] || []), text],
     });
+  };
+
+  const handleReaction = (postId, emoji) => {
+    setReactions(prev => ({
+      ...prev,
+      [postId]: {
+        ...prev[postId],
+        [emoji]: (prev[postId]?.[emoji] || 0) + 1
+      }
+    }));
   };
 
   if (loading) {
@@ -254,6 +265,29 @@ const App = () => {
                 <button onClick={() => handleLike(post.id)} className="like-btn">
                   👍 Like ({likes[post.id] || 0})
                 </button>
+                <div className="reactions-container">
+                  <div className="reaction-buttons">
+                    {['❤️', '😂', '😮', '😢', '😡', '🔥'].map(emoji => (
+                      <button 
+                        key={emoji}
+                        onClick={() => handleReaction(post.id, emoji)} 
+                        className="reaction-btn"
+                        title={`React with ${emoji}`}
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                  {reactions[post.id] && (
+                    <div className="reactions-display">
+                      {Object.entries(reactions[post.id]).map(([emoji, count]) => (
+                        <span key={emoji} className="reaction-count">
+                          {emoji} {count}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
               <div className="comments-section">
                 <input
