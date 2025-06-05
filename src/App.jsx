@@ -15,9 +15,9 @@ import {
 // Firebase configuration - Replace with your actual config
 const firebaseConfig = {
   apiKey: "AIzaSyANv-NM_A5ZXB-FReeMLFveD_dQSnU3iYA",
-  authDomain: "your-project.firebaseapp.com",
+  authDomain: "brim-7c24b.firebaseapp.com",
   projectId: "brim-7c24b",
-  storageBucket: "your-project.appspot.com",
+  storageBucket: "brim-7c24b.appspot.com",
   messagingSenderId: "123456789",
   appId: "your-app-id"
 };
