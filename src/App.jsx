@@ -18,8 +18,8 @@ const firebaseConfig = {
   authDomain: "brim-7c24b.firebaseapp.com",
   projectId: "brim-7c24b",
   storageBucket: "brim-7c24b.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "your-app-id"
+  messagingSenderId: "93916627211",
+  appId: "1:93916627211:web:8179df32b94e20402fa20e"
 };
 
 // Initialize Firebase
