@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApp } from 'firebase/app';
 import { 
   getAuth, 
   signInWithPopup, 
@@ -23,7 +23,17 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
+let app;
+try {
+  app = initializeApp(firebaseConfig);
+} catch (error) {
+  // If app is already initialized, get the existing instance
+  if (error.code === 'app/duplicate-app') {
+    app = getApp();
+  } else {
+    throw error;
+  }
+}
 const auth = getAuth(app);
 
 const App = () => {
