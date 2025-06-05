@@ -146,7 +146,7 @@ const App = () => {
     return (
       <div className="app-container">
         <div className="auth-container">
-          <h1 className="auth-title">Mini Social App</h1>
+          <h1 className="auth-title">BRIM</h1>
           <p className="auth-subtitle">Connect and share with friends</p>
 
           <div className="auth-buttons">
@@ -204,7 +204,7 @@ const App = () => {
     <div className="app-container">
       <div className="main-container">
         <div className="header">
-          <h1 className="app-title">Mini Social App</h1>
+          <h1 className="app-title">BRIM</h1>
           <div className="user-info">
             {user.photoURL && (
               <img src={user.photoURL} alt="Profile" className="profile-pic" />
