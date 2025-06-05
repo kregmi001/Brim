@@ -1,8 +1,32 @@
-// Step 1: Basic Setup - Create a React app layout
+
 import React, { useState, useEffect } from 'react';
+import { initializeApp } from 'firebase/app';
+import { 
+  getAuth, 
+  signInWithPopup, 
+  GoogleAuthProvider, 
+  TwitterAuthProvider,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+  onAuthStateChanged 
+} from 'firebase/auth';
+
+// Firebase configuration - Replace with your actual config
+const firebaseConfig = {
+  apiKey: "AIzaSyANv-NM_A5ZXB-FReeMLFveD_dQSnU3iYA",
+  authDomain: "your-project.firebaseapp.com",
+  projectId: "brim-7c24b",
+  storageBucket: "your-project.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "your-app-id"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 
 const App = () => {
-  // Step 2: Set up initial state for users, posts, friends, images
   const [posts, setPosts] = useState([]);
   const [newPost, setNewPost] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
@@ -10,60 +34,91 @@ const App = () => {
   const [likes, setLikes] = useState({});
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showEmailForm, setShowEmailForm] = useState(false);
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [isSignUp, setIsSignUp] = useState(false);
 
-  // Check if user is authenticated
+  // Check authentication state
   useEffect(() => {
-    checkAuthStatus();
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
   }, []);
 
-  const checkAuthStatus = async () => {
+  // Google Sign In
+  const signInWithGoogle = async () => {
+    const provider = new GoogleAuthProvider();
     try {
-      const response = await fetch('/__replauthuser');
-      if (response.ok) {
-        const userData = await response.json();
-        setUser(userData);
-      }
+      await signInWithPopup(auth, provider);
     } catch (error) {
-      console.log('User not authenticated');
-    } finally {
-      setLoading(false);
+      console.error('Error signing in with Google:', error);
     }
   };
 
-  // Login function for Replit Auth
-  const loginWithReplit = () => {
-    window.addEventListener("message", authComplete);
-    var h = 500;
-    var w = 350;
-    var left = window.screen.width / 2 - w / 2;
-    var top = window.screen.height / 2 - h / 2;
+  // Twitter Sign In
+  const signInWithTwitter = async () => {
+    const provider = new TwitterAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+    } catch (error) {
+      console.error('Error signing in with Twitter:', error);
+    }
+  };
 
-    var authWindow = window.open(
-      "https://replit.com/auth_with_repl_site?domain=" + window.location.host,
-      "_blank",
-      "modal=yes, toolbar=no, location=no, directories=no, status=no, menubar=no, scrollbars=no, resizable=no, copyhistory=no, width=" +
-        w +
-        ", height=" +
-        h +
-        ", top=" +
-        top +
-        ", left=" +
-        left
-    );
-
-    function authComplete(e) {
-      if (e.data !== "auth_complete") {
-        return;
+  // Email/Password Sign In/Up
+  const handleEmailAuth = async (e) => {
+    e.preventDefault();
+    try {
+      if (isSignUp) {
+        await createUserWithEmailAndPassword(auth, email, password);
+      } else {
+        await signInWithEmailAndPassword(auth, email, password);
       }
-
-      window.removeEventListener("message", authComplete);
-      authWindow.close();
-      window.location.reload();
+      setShowEmailForm(false);
+      setEmail('');
+      setPassword('');
+    } catch (error) {
+      console.error('Error with email authentication:', error);
+      alert(error.message);
     }
   };
 
-  const logout = () => {
-    window.location.href = '/__replauthlogout';
+  // Sign Out
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  const handleAddPost = () => {
+    if (newPost.trim() === '' && !selectedImage) return;
+    const postId = Date.now().toString();
+    const newEntry = {
+      id: postId,
+      content: newPost,
+      image: selectedImage ? URL.createObjectURL(selectedImage) : null,
+      author: user.displayName || user.email,
+    };
+    setPosts([...posts, newEntry]);
+    setNewPost('');
+    setSelectedImage(null);
+  };
+
+  const handleLike = (postId) => {
+    setLikes({ ...likes, [postId]: (likes[postId] || 0) + 1 });
+  };
+
+  const handleAddComment = (postId, text) => {
+    setComments({
+      ...comments,
+      [postId]: [...(comments[postId] || []), text],
+    });
   };
 
   if (loading) {
@@ -78,67 +133,122 @@ const App = () => {
     return (
       <div style={{ padding: '1rem', maxWidth: '600px', margin: 'auto', textAlign: 'center' }}>
         <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', marginBottom: '1rem' }}>Mini Social App</h1>
-        <p style={{ marginBottom: '1rem' }}>Please log in with your Replit account to continue</p>
-        <button 
-          onClick={loginWithReplit}
-          style={{ 
-            backgroundColor: '#007bff', 
-            color: '#fff', 
-            padding: '12px 24px', 
-            borderRadius: '6px', 
-            border: 'none',
-            fontSize: '16px',
-            cursor: 'pointer'
-          }}
-        >
-          Log in with Replit
-        </button>
+        <p style={{ marginBottom: '1rem' }}>Please sign in to continue</p>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', maxWidth: '300px', margin: 'auto' }}>
+          <button 
+            onClick={signInWithGoogle}
+            style={{ 
+              backgroundColor: '#db4437', 
+              color: '#fff', 
+              padding: '12px 24px', 
+              borderRadius: '6px', 
+              border: 'none',
+              fontSize: '16px',
+              cursor: 'pointer'
+            }}
+          >
+            Sign in with Google
+          </button>
+
+          <button 
+            onClick={signInWithTwitter}
+            style={{ 
+              backgroundColor: '#1da1f2', 
+              color: '#fff', 
+              padding: '12px 24px', 
+              borderRadius: '6px', 
+              border: 'none',
+              fontSize: '16px',
+              cursor: 'pointer'
+            }}
+          >
+            Sign in with X (Twitter)
+          </button>
+
+          <button 
+            onClick={() => setShowEmailForm(!showEmailForm)}
+            style={{ 
+              backgroundColor: '#28a745', 
+              color: '#fff', 
+              padding: '12px 24px', 
+              borderRadius: '6px', 
+              border: 'none',
+              fontSize: '16px',
+              cursor: 'pointer'
+            }}
+          >
+            Sign in with Email
+          </button>
+        </div>
+
+        {showEmailForm && (
+          <form onSubmit={handleEmailAuth} style={{ marginTop: '20px', maxWidth: '300px', margin: '20px auto' }}>
+            <div style={{ marginBottom: '10px' }}>
+              <input
+                type="email"
+                placeholder="Email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ccc' }}
+              />
+            </div>
+            <div style={{ marginBottom: '10px' }}>
+              <input
+                type="password"
+                placeholder="Password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                style={{ width: '100%', padding: '10px', borderRadius: '4px', border: '1px solid #ccc' }}
+              />
+            </div>
+            <div style={{ marginBottom: '10px' }}>
+              <label style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+                <input
+                  type="checkbox"
+                  checked={isSignUp}
+                  onChange={(e) => setIsSignUp(e.target.checked)}
+                />
+                Create new account
+              </label>
+            </div>
+            <button 
+              type="submit"
+              style={{ 
+                backgroundColor: '#007bff', 
+                color: '#fff', 
+                padding: '10px 20px', 
+                borderRadius: '4px', 
+                border: 'none',
+                cursor: 'pointer',
+                width: '100%'
+              }}
+            >
+              {isSignUp ? 'Sign Up' : 'Sign In'}
+            </button>
+          </form>
+        )}
       </div>
     );
   }
-
-  // Step 3: Function to handle adding a new post
-  const handleAddPost = () => {
-    if (newPost.trim() === '' && !selectedImage) return;
-    const postId = Date.now().toString();
-    const newEntry = {
-      id: postId,
-      content: newPost,
-      image: selectedImage ? URL.createObjectURL(selectedImage) : null,
-    };
-    setPosts([...posts, newEntry]);
-    setNewPost('');
-    setSelectedImage(null);
-  };
-
-  // Step 4: Function to handle liking a post
-  const handleLike = (postId) => {
-    setLikes({ ...likes, [postId]: (likes[postId] || 0) + 1 });
-  };
-
-  // Step 5: Function to handle adding a comment
-  const handleAddComment = (postId, text) => {
-    setComments({
-      ...comments,
-      [postId]: [...(comments[postId] || []), text],
-    });
-  };
 
   return (
     <div style={{ padding: '1rem', maxWidth: '600px', margin: 'auto' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
         <h1 style={{ fontSize: '1.5rem', fontWeight: 'bold', margin: 0 }}>Mini Social App</h1>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-          {user.profileImage && (
+          {user.photoURL && (
             <img 
-              src={user.profileImage} 
+              src={user.photoURL} 
               alt="Profile" 
               style={{ width: '32px', height: '32px', borderRadius: '50%' }}
             />
           )}
-          <span style={{ fontSize: '14px' }}>Welcome, {user.name}!</span>
+          <span style={{ fontSize: '14px' }}>Welcome, {user.displayName || user.email}!</span>
           <button 
-            onClick={logout}
+            onClick={handleSignOut}
             style={{ 
               backgroundColor: '#dc3545', 
               color: '#fff', 
@@ -149,10 +259,11 @@ const App = () => {
               cursor: 'pointer'
             }}
           >
-            Logout
+            Sign Out
           </button>
         </div>
       </div>
+
       <textarea
         style={{ width: '100%', padding: '10px', borderRadius: '5px', border: '1px solid #ccc', marginBottom: '10px' }}
         placeholder="What's on your mind?"
@@ -171,6 +282,9 @@ const App = () => {
 
       {posts.map((post) => (
         <div key={post.id} style={{ border: '1px solid #ccc', padding: '10px', marginTop: '20px', borderRadius: '6px' }}>
+          <div style={{ fontSize: '12px', color: '#666', marginBottom: '5px' }}>
+            By: {post.author}
+          </div>
           <div>
             <p>{post.content}</p>
             {post.image && (
