@@ -162,15 +162,15 @@ const App = () => {
           <p className="auth-subtitle">Connect and share with friends</p>
 
           <div className="auth-buttons">
-            <button onClick={signInWithGoogle} className="auth-button google-btn">
+            <button onClick={signInWithGoogle} className="btn btn-primary">
               🔍 Sign in with Google
             </button>
 
-            <button onClick={signInWithTwitter} className="auth-button twitter-btn">
+            <button onClick={signInWithTwitter} className="btn btn-secondary">
               🐦 Sign in with X (Twitter)
             </button>
 
-            <button onClick={() => setShowEmailForm(!showEmailForm)} className="auth-button email-btn">
+            <button onClick={() => setShowEmailForm(!showEmailForm)} className="btn btn-accent">
               ✉️ Sign in with Email
             </button>
           </div>
@@ -202,7 +202,7 @@ const App = () => {
                 />
                 <label htmlFor="signup-checkbox">Create new account</label>
               </div>
-              <button type="submit" className="submit-btn">
+              <button type="submit" className="btn btn-primary w-full mt-2">
                 {isSignUp ? 'Create Account' : 'Sign In'}
               </button>
             </form>
@@ -222,7 +222,7 @@ const App = () => {
               <img src={user.photoURL} alt="Profile" className="profile-pic" />
             )}
             <span className="welcome-text">Welcome, {user.displayName || user.email}!</span>
-            <button onClick={handleSignOut} className="sign-out-btn">
+            <button onClick={handleSignOut} className="btn btn-sm">
               Sign Out
             </button>
           </div>
@@ -241,7 +241,7 @@ const App = () => {
             onChange={(e) => setSelectedImage(e.target.files[0])}
             className="file-input"
           />
-          <button onClick={handleAddPost} className="post-btn">
+          <button onClick={handleAddPost} className="btn btn-primary mt-2">
             📝 Share Post
           </button>
         </div>
@@ -268,16 +268,16 @@ const App = () => {
                 />
               )}
               <div className="post-actions">
-                <button onClick={() => handleLike(post.id)} className="like-btn">
+                <button onClick={() => handleLike(post.id)} className="btn btn-sm btn-outline">
                   👍 Like ({likes[post.id] || 0})
                 </button>
                 <div className="reactions-container">
                   <div className="reaction-buttons">
                     {['❤️', '😂', '😮', '😢', '😡', '🔥'].map(emoji => (
-                      <button 
+                      <button
                         key={emoji}
-                        onClick={() => handleReaction(post.id, emoji)} 
-                        className="reaction-btn"
+                        onClick={() => handleReaction(post.id, emoji)}
+                        className="btn btn-xs btn-ghost"
                         title={`React with ${emoji}`}
                       >
                         {emoji}
@@ -305,7 +305,7 @@ const App = () => {
                       e.target.value = '';
                     }
                   }}
-                  className="comment-input"
+                  className="input input-bordered w-full"
                 />
                 {(comments[post.id] || []).map((comment, i) => (
                   <div key={i} className="comment">💬 {comment}</div>
