@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { initializeApp, getApp } from 'firebase/app';
 import './App.css';
@@ -162,15 +161,15 @@ const App = () => {
           <p className="auth-subtitle">Connect and share with friends</p>
 
           <div className="auth-buttons">
-            <button onClick={signInWithGoogle} className="btn btn-primary">
+            <button onClick={signInWithGoogle} className="auth-button google-btn">
               🔍 Sign in with Google
             </button>
 
-            <button onClick={signInWithTwitter} className="btn btn-secondary">
+            <button onClick={signInWithTwitter} className="auth-button twitter-btn">
               🐦 Sign in with X (Twitter)
             </button>
 
-            <button onClick={() => setShowEmailForm(!showEmailForm)} className="btn btn-accent">
+            <button onClick={() => setShowEmailForm(!showEmailForm)} className="auth-button email-btn">
               ✉️ Sign in with Email
             </button>
           </div>
@@ -202,7 +201,7 @@ const App = () => {
                 />
                 <label htmlFor="signup-checkbox">Create new account</label>
               </div>
-              <button type="submit" className="btn btn-primary w-full mt-2">
+              <button type="submit" className="submit-btn">
                 {isSignUp ? 'Create Account' : 'Sign In'}
               </button>
             </form>
@@ -222,7 +221,7 @@ const App = () => {
               <img src={user.photoURL} alt="Profile" className="profile-pic" />
             )}
             <span className="welcome-text">Welcome, {user.displayName || user.email}!</span>
-            <button onClick={handleSignOut} className="btn btn-sm">
+            <button onClick={handleSignOut} className="sign-out-btn">
               Sign Out
             </button>
           </div>
@@ -241,7 +240,7 @@ const App = () => {
             onChange={(e) => setSelectedImage(e.target.files[0])}
             className="file-input"
           />
-          <button onClick={handleAddPost} className="btn btn-primary mt-2">
+          <button onClick={handleAddPost} className="post-btn">
             📝 Share Post
           </button>
         </div>
@@ -268,7 +267,7 @@ const App = () => {
                 />
               )}
               <div className="post-actions">
-                <button onClick={() => handleLike(post.id)} className="btn btn-sm btn-outline">
+                <button onClick={() => handleLike(post.id)} className="like-btn">
                   👍 Like ({likes[post.id] || 0})
                 </button>
                 <div className="reactions-container">
@@ -277,7 +276,7 @@ const App = () => {
                       <button
                         key={emoji}
                         onClick={() => handleReaction(post.id, emoji)}
-                        className="btn btn-xs btn-ghost"
+                        className="reaction-btn"
                         title={`React with ${emoji}`}
                       >
                         {emoji}
@@ -305,7 +304,7 @@ const App = () => {
                       e.target.value = '';
                     }
                   }}
-                  className="input input-bordered w-full"
+                  className="comment-input"
                 />
                 {(comments[post.id] || []).map((comment, i) => (
                   <div key={i} className="comment">💬 {comment}</div>

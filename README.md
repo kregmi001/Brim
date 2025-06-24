@@ -16,18 +16,42 @@ By default, Replit runs the `dev` script, but you can configure it by changing t
 
 Just rename any file from `.jsx` to `.tsx`. You can also try our [TypeScript Template](https://replit.com/@replit/React-TypeScript)
 
+### Firebase Setup
+
+This app requires Firebase for authentication. Follow these steps to set it up:
+
+1. Go to [Firebase Console](https://console.firebase.google.com/)
+2. Create a new project or select an existing one
+3. Enable Authentication and add Google and Twitter providers
+4. Go to Project Settings > General
+5. Scroll down to "Your apps" and click the web icon (</>)
+6. Register your app and copy the configuration
+
 ### Environment Variables
 
 Create a `.env` file in the project root and define your Firebase settings:
 
 ```
-VITE_FIREBASE_API_KEY=<your api key>
-VITE_FIREBASE_AUTH_DOMAIN=<your auth domain>
-VITE_FIREBASE_PROJECT_ID=<your project id>
-VITE_FIREBASE_STORAGE_BUCKET=<your storage bucket>
-VITE_FIREBASE_MESSAGING_SENDER_ID=<your sender id>
-VITE_FIREBASE_APP_ID=<your app id>
+VITE_FIREBASE_API_KEY=your_api_key_here
+VITE_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
 ```
 
+**Important:** Replace the placeholder values with your actual Firebase project credentials from the Firebase Console.
+
 These values are loaded in `src/App.jsx` via `import.meta.env`.
+
+### Features
+
+- 🔐 Google and Twitter authentication
+- ✉️ Email/password authentication
+- 📝 Create and share posts
+- 🖼️ Upload images
+- 👍 Like posts
+- 😀 React with emojis
+- 💬 Add comments
+- 📱 Responsive design
 
