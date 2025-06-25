@@ -465,9 +465,25 @@ const App = () => {
     
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
+      console.log('Attempting Google sign-in...');
+      console.log('Firebase config check:', {
+        apiKey: firebaseConfig.apiKey ? 'Present' : 'Missing',
+        authDomain: firebaseConfig.authDomain ? 'Present' : 'Missing',
+        projectId: firebaseConfig.projectId ? 'Present' : 'Missing',
+        storageBucket: firebaseConfig.storageBucket ? 'Present' : 'Missing',
+        messagingSenderId: firebaseConfig.messagingSenderId ? 'Present' : 'Missing',
+        appId: firebaseConfig.appId ? 'Present' : 'Missing'
+      });
+      
+      const result = await signInWithPopup(auth, provider);
+      console.log('Google sign-in successful:', result.user.email);
     } catch (error) {
-      console.error('Error signing in with Google:', error);
+      console.error('Detailed Google sign-in error:', {
+        code: error.code,
+        message: error.message,
+        email: error.email,
+        credential: error.credential
+      });
       
       // Handle specific Firebase auth errors
       switch (error.code) {
@@ -484,10 +500,16 @@ const App = () => {
           setErrorText('Too many failed attempts. Please try again later.');
           break;
         case 'auth/operation-not-allowed':
-          setErrorText('Google sign-in is not enabled. Please contact support.');
+          setErrorText('Google sign-in is not enabled. Please enable it in Firebase Console → Authentication → Sign-in method.');
+          break;
+        case 'auth/unauthorized-domain':
+          setErrorText('This domain is not authorized. Please add localhost to authorized domains in Firebase Console.');
+          break;
+        case 'auth/invalid-api-key':
+          setErrorText('Invalid Firebase API key. Please check your .env file configuration.');
           break;
         default:
-          setErrorText('Failed to sign in with Google. Please try again.');
+          setErrorText(`Failed to sign in with Google: ${error.message}`);
       }
     } finally {
       setIsAuthenticating(false);
@@ -713,20 +735,27 @@ const App = () => {
 
   return (
     <div className="app-container">
-      <div className="main-container">
-        <div className="header">
-          <h1 className="app-title">BRIM</h1>
-          <div className="user-info">
-            {user.photoURL && (
-              <img src={user.photoURL} alt="Profile" className="profile-pic" />
-            )}
-            <span className="welcome-text">Welcome, {user.displayName || user.email}!</span>
-            <button onClick={handleSignOut} className="sign-out-btn">
-              Sign Out
-            </button>
+      <div className="header">
+        <div className="header-content">
+          <div className="logo">
+            <span className="logo-icon">🏠</span>
+            BRIM
+          </div>
+          <div className="header-nav">
+            <div className="user-menu">
+              {user.photoURL && (
+                <img src={user.photoURL} alt="Profile" className="user-avatar" />
+              )}
+              <span className="user-name">{user.displayName || user.email}</span>
+              <button onClick={handleSignOut} className="sign-out-btn">
+                Sign Out
+              </button>
+            </div>
           </div>
         </div>
+      </div>
 
+      <div className="main-content">
         <div className="tab-navigation">
           <button
             onClick={() => setActiveTab('posts')}
