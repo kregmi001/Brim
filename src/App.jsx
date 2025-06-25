@@ -198,22 +198,26 @@ const ProfileCreation = ({ user, onProfileComplete }) => {
     }
   };
 
+  const handleRemoveImage = (index) => {
+    setProfile(prev => ({
+      ...prev,
+      images: prev.images.filter((_, i) => i !== index)
+    }));
+  };
+
   const handleSubmit = () => {
-    if (profile.name && profile.age && profile.bio) {
-      // Here you would typically save to Firebase
-      console.log('Profile created:', profile);
+    if (profile.name && profile.age && profile.bio && profile.images.length > 0) {
       onProfileComplete(profile);
     } else {
-      alert('Please fill in all required fields');
+      alert('Please fill in all required fields and upload at least one image');
     }
   };
 
   const steps = [
     {
-      title: 'Basic Info',
-      content: (
-        <div className="profile-step">
-          <h3>Tell us about yourself</h3>
+      title: 'Basic Information',
+      fields: (
+        <div>
           <input
             type="text"
             placeholder="Your name"
@@ -223,26 +227,46 @@ const ProfileCreation = ({ user, onProfileComplete }) => {
           />
           <input
             type="number"
-            placeholder="Age"
+            placeholder="Your age"
             value={profile.age}
             onChange={(e) => setProfile(prev => ({ ...prev, age: e.target.value }))}
             className="form-input"
           />
-          <textarea
-            placeholder="Write a short bio about yourself..."
-            value={profile.bio}
-            onChange={(e) => setProfile(prev => ({ ...prev, bio: e.target.value }))}
+          <input
+            type="text"
+            placeholder="Your location"
+            value={profile.location}
+            onChange={(e) => setProfile(prev => ({ ...prev, location: e.target.value }))}
             className="form-input"
-            rows="4"
           />
         </div>
       )
     },
     {
-      title: 'Photos',
-      content: (
-        <div className="profile-step">
-          <h3>Add up to 5 photos</h3>
+      title: 'About You',
+      fields: (
+        <div>
+          <textarea
+            placeholder="Tell us about yourself..."
+            value={profile.bio}
+            onChange={(e) => setProfile(prev => ({ ...prev, bio: e.target.value }))}
+            className="form-input"
+            rows="4"
+          />
+          <input
+            type="text"
+            placeholder="Your interests (e.g., hiking, cooking, travel)"
+            value={profile.interests}
+            onChange={(e) => setProfile(prev => ({ ...prev, interests: e.target.value }))}
+            className="form-input"
+          />
+        </div>
+      )
+    },
+    {
+      title: 'Profile Pictures',
+      fields: (
+        <div>
           <input
             type="file"
             accept="image/*"
@@ -253,41 +277,16 @@ const ProfileCreation = ({ user, onProfileComplete }) => {
           <div className="image-preview">
             {profile.images.map((image, index) => (
               <div key={index} className="image-preview-item">
-                <img src={image} alt={`Photo ${index + 1}`} />
+                <img src={image} alt={`Profile ${index + 1}`} />
                 <button
-                  onClick={() => setProfile(prev => ({
-                    ...prev,
-                    images: prev.images.filter((_, i) => i !== index)
-                  }))}
+                  onClick={() => handleRemoveImage(index)}
                   className="remove-image-btn"
                 >
-                  ✕
+                  ×
                 </button>
               </div>
             ))}
           </div>
-        </div>
-      )
-    },
-    {
-      title: 'Details',
-      content: (
-        <div className="profile-step">
-          <h3>Additional details</h3>
-          <input
-            type="text"
-            placeholder="Location"
-            value={profile.location}
-            onChange={(e) => setProfile(prev => ({ ...prev, location: e.target.value }))}
-            className="form-input"
-          />
-          <textarea
-            placeholder="Interests (e.g., hiking, cooking, music)"
-            value={profile.interests}
-            onChange={(e) => setProfile(prev => ({ ...prev, interests: e.target.value }))}
-            className="form-input"
-            rows="3"
-          />
         </div>
       )
     }
@@ -297,26 +296,33 @@ const ProfileCreation = ({ user, onProfileComplete }) => {
     <div className="profile-creation">
       <div className="profile-creation-header">
         <h2>Create Your Profile</h2>
-        <div className="step-indicator">
-          {steps.map((step, index) => (
-            <div
-              key={index}
-              className={`step ${index === currentStep ? 'active' : ''} ${index < currentStep ? 'completed' : ''}`}
-            >
-              {index + 1}
-            </div>
-          ))}
-        </div>
+        <p>Let's set up your profile to help you connect with others</p>
       </div>
-      
+
+      <div className="step-indicator">
+        {steps.map((_, index) => (
+          <div
+            key={index}
+            className={`step ${index === currentStep ? 'active' : ''} ${
+              index < currentStep ? 'completed' : ''
+            }`}
+          >
+            {index + 1}
+          </div>
+        ))}
+      </div>
+
       <div className="profile-creation-content">
-        {steps[currentStep].content}
+        <div className="profile-step">
+          <h3>{steps[currentStep].title}</h3>
+          {steps[currentStep].fields}
+        </div>
       </div>
 
       <div className="profile-creation-actions">
         {currentStep > 0 && (
           <button
-            onClick={() => setCurrentStep(prev => prev - 1)}
+            onClick={() => setCurrentStep(currentStep - 1)}
             className="btn btn-secondary"
           >
             Previous
@@ -324,16 +330,13 @@ const ProfileCreation = ({ user, onProfileComplete }) => {
         )}
         {currentStep < steps.length - 1 ? (
           <button
-            onClick={() => setCurrentStep(prev => prev + 1)}
+            onClick={() => setCurrentStep(currentStep + 1)}
             className="btn btn-primary"
           >
             Next
           </button>
         ) : (
-          <button
-            onClick={handleSubmit}
-            className="btn btn-primary"
-          >
+          <button onClick={handleSubmit} className="btn btn-primary">
             Complete Profile
           </button>
         )}
@@ -342,70 +345,201 @@ const ProfileCreation = ({ user, onProfileComplete }) => {
   );
 };
 
-// Profiles Tab Component
-const ProfilesTab = ({ user, userProfile }) => {
-  const [profiles, setProfiles] = useState([
-    // Mock data - in real app this would come from Firebase
-    {
-      id: 1,
-      name: 'Sarah Johnson',
-      age: 25,
-      bio: 'Adventure seeker and coffee enthusiast ☕',
-      location: 'San Francisco, CA',
-      images: ['https://via.placeholder.com/300x400/FF6B6B/white?text=Sarah'],
-      interests: 'Hiking, Photography, Travel'
-    },
-    {
-      id: 2,
-      name: 'Mike Chen',
-      age: 28,
-      bio: 'Tech geek by day, musician by night 🎸',
-      location: 'New York, NY',
-      images: ['https://via.placeholder.com/300x400/4ECDC4/white?text=Mike'],
-      interests: 'Coding, Guitar, Basketball'
-    }
-  ]);
-
-  const [currentProfileIndex, setCurrentProfileIndex] = useState(0);
-
-  const handleLike = () => {
-    // In real app, this would save to Firebase
-    console.log('Liked profile:', profiles[currentProfileIndex]);
-    setCurrentProfileIndex(prev => prev + 1);
-  };
-
-  const handlePass = () => {
-    setCurrentProfileIndex(prev => prev + 1);
-  };
-
-  if (currentProfileIndex >= profiles.length) {
+// User Profile Component - Tinder-like display
+const UserProfile = ({ user, userProfile }) => {
+  if (!userProfile) {
     return (
-      <div className="profiles-tab">
-        <div className="no-more-profiles">
-          <h3>No more profiles to show!</h3>
-          <p>Check back later for new people.</p>
+      <div className="profile-container">
+        <div className="no-profile-message">
+          <h3>No Profile Found</h3>
+          <p>Please complete your profile setup to view it here.</p>
         </div>
       </div>
     );
   }
 
-  const currentProfile = profiles[currentProfileIndex];
+  return (
+    <div className="profile-container">
+      <div className="user-profile-card">
+        {/* Profile Image Collage - Tinder Style */}
+        <div className="profile-image-collage">
+          {userProfile.images.length > 0 ? (
+            <div className="image-grid">
+              {userProfile.images.map((image, index) => (
+                <div 
+                  key={index} 
+                  className={`image-item image-item-${index + 1}`}
+                  style={{ backgroundImage: `url(${image})` }}
+                >
+                  {index === 0 && (
+                    <div className="profile-overlay">
+                      <div className="profile-info-overlay">
+                        <h2>{userProfile.name}, {userProfile.age}</h2>
+                        <p className="location">{userProfile.location}</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="no-images">
+              <span className="default-avatar-large">👤</span>
+            </div>
+          )}
+        </div>
+
+        {/* Profile Information */}
+        <div className="profile-details">
+          <div className="profile-header">
+            <h2>{userProfile.name}, {userProfile.age}</h2>
+            <p className="location">📍 {userProfile.location}</p>
+          </div>
+
+          <div className="profile-bio">
+            <h3>About Me</h3>
+            <p>{userProfile.bio}</p>
+          </div>
+
+          {userProfile.interests && (
+            <div className="profile-interests">
+              <h3>Interests</h3>
+              <div className="interests-tags">
+                {userProfile.interests.split(',').map((interest, index) => (
+                  <span key={index} className="interest-tag">
+                    {interest.trim()}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+
+          <div className="profile-actions">
+            <button className="edit-profile-btn">
+              ✏️ Edit Profile
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+// Discover People Tab (formerly Profiles Tab)
+const DiscoverPeopleTab = ({ user, userProfile }) => {
+  const [currentProfileIndex, setCurrentProfileIndex] = useState(0);
+  
+  // Mock profiles for demonstration
+  const mockProfiles = [
+    {
+      id: 1,
+      name: 'Sarah',
+      age: 25,
+      location: 'San Francisco, CA',
+      bio: 'Adventure seeker and coffee enthusiast. Love hiking, photography, and trying new restaurants.',
+      interests: 'Hiking, Photography, Coffee, Travel',
+      images: [
+        'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400',
+        'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400',
+        'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400'
+      ]
+    },
+    {
+      id: 2,
+      name: 'Alex',
+      age: 28,
+      location: 'New York, NY',
+      bio: 'Tech enthusiast and foodie. Always up for trying new cuisines and exploring the city.',
+      interests: 'Technology, Food, Travel, Music',
+      images: [
+        'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
+        'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400',
+        'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400'
+      ]
+    },
+    {
+      id: 3,
+      name: 'Emma',
+      age: 24,
+      location: 'Austin, TX',
+      bio: 'Artist and nature lover. I paint landscapes and enjoy spending time outdoors.',
+      interests: 'Art, Nature, Painting, Yoga',
+      images: [
+        'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400',
+        'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=400',
+        'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400'
+      ]
+    }
+  ];
+
+  const currentProfile = mockProfiles[currentProfileIndex];
+
+  const handleLike = () => {
+    if (currentProfileIndex < mockProfiles.length - 1) {
+      setCurrentProfileIndex(currentProfileIndex + 1);
+    } else {
+      setCurrentProfileIndex(0); // Reset to first profile
+    }
+  };
+
+  const handlePass = () => {
+    if (currentProfileIndex < mockProfiles.length - 1) {
+      setCurrentProfileIndex(currentProfileIndex + 1);
+    } else {
+      setCurrentProfileIndex(0); // Reset to first profile
+    }
+  };
+
+  if (mockProfiles.length === 0) {
+    return (
+      <div className="profiles-tab">
+        <div className="no-more-profiles">
+          <h3>No More Profiles</h3>
+          <p>Check back later for new people to discover!</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="profiles-tab">
       <div className="profile-card">
+        {/* Profile Image Collage - Tinder Style */}
         <div className="profile-image">
-          <img src={currentProfile.images[0]} alt={currentProfile.name} />
+          <div className="image-grid">
+            {currentProfile.images.map((image, index) => (
+              <div 
+                key={index} 
+                className={`image-item image-item-${index + 1}`}
+                style={{ backgroundImage: `url(${image})` }}
+              >
+                {index === 0 && (
+                  <div className="profile-overlay">
+                    <div className="profile-info-overlay">
+                      <h2>{currentProfile.name}, {currentProfile.age}</h2>
+                      <p className="location">📍 {currentProfile.location}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
+
         <div className="profile-info">
           <h3>{currentProfile.name}, {currentProfile.age}</h3>
           <p className="profile-location">📍 {currentProfile.location}</p>
-          <p className="profile-bio">{currentProfile.bio}</p>
-          <p className="profile-interests">🎯 {currentProfile.interests}</p>
+          <div className="profile-bio">
+            <p>{currentProfile.bio}</p>
+          </div>
+          <div className="profile-interests">
+            <p><strong>Interests:</strong> {currentProfile.interests}</p>
+          </div>
         </div>
+
         <div className="profile-actions">
           <button onClick={handlePass} className="pass-btn">
-            ✕ Pass
+            ❌ Pass
           </button>
           <button onClick={handleLike} className="like-profile-btn">
             ❤️ Like
@@ -758,22 +892,29 @@ const App = () => {
       <div className="main-content">
         <div className="tab-navigation">
           <button
+            className={`tab-button ${activeTab === 'posts' ? 'active' : ''}`}
             onClick={() => setActiveTab('posts')}
-            className={`tab-btn ${activeTab === 'posts' ? 'active' : ''}`}
           >
-            📝 Posts
+            Posts
           </button>
           <button
+            className={`tab-button ${activeTab === 'profiles' ? 'active' : ''}`}
             onClick={() => setActiveTab('profiles')}
-            className={`tab-btn ${activeTab === 'profiles' ? 'active' : ''}`}
           >
-            👥 Profiles
+            Discover People
+          </button>
+          <button
+            className={`tab-button ${activeTab === 'profile' ? 'active' : ''}`}
+            onClick={() => setActiveTab('profile')}
+          >
+            Profile
           </button>
         </div>
 
         <div className="tab-content-container">
           {activeTab === 'posts' && <PostsTab user={user} />}
-          {activeTab === 'profiles' && <ProfilesTab user={user} userProfile={userProfile} />}
+          {activeTab === 'profiles' && <DiscoverPeopleTab user={user} userProfile={userProfile} />}
+          {activeTab === 'profile' && <UserProfile user={user} userProfile={userProfile} />}
         </div>
       </div>
     </div>
