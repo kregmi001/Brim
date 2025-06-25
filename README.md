@@ -46,12 +46,41 @@ These values are loaded in `src/App.jsx` via `import.meta.env`.
 
 ### Features
 
-- 🔐 Google and Twitter authentication
-- ✉️ Email/password authentication
-- 📝 Create and share posts
-- 🖼️ Upload images
-- 👍 Like posts
-- 😀 React with emojis
-- 💬 Add comments
-- 📱 Responsive design
+#### 🔐 Authentication
+- Google and Twitter authentication
+- Email/password authentication
+- Secure sign-out functionality
+
+#### 📝 Posts Tab
+- Create and share posts with text and images
+- Like posts and react with emojis
+- Add comments to posts
+- Real-time post interactions
+
+#### 👥 Profiles Tab
+- Tinder-like profile browsing
+- Swipe through user profiles
+- Like or pass on profiles
+- View profile details including photos, bio, and interests
+
+#### 👤 Profile Creation
+- Multi-step profile creation process
+- Upload up to 5 photos
+- Add personal details (name, age, bio, location, interests)
+- Step-by-step guided setup
+
+#### 📱 User Experience
+- Tab-based navigation between Posts and Profiles
+- Responsive design for mobile and desktop
+- Modern, clean UI with smooth animations
+- Loading states and error handling
+
+### App Structure
+
+- **Posts Tab**: Social media feed with post creation and interaction
+- **Profiles Tab**: Dating app-style profile browsing
+- **Profile Creation**: Guided setup for new users
+- **Authentication**: Secure login with multiple providers
+
+The app combines social media features with dating app functionality, creating a unique platform for both social networking and meeting new people.
 
